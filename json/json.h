@@ -110,6 +110,9 @@ public:
     void remove(const char* key);
     void remove(const string &key);
 
+    // 解析
+    void parse(const string &str);
+
 
 private:
     // 联合体占内存更小一点, double 8byte

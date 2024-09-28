@@ -1,6 +1,9 @@
 #include<iostream>
 using namespace std;
 
+#include<fstream>
+#include<sstream>
+
 #include "json.h"
 using namespace yazi::json;
 
@@ -39,18 +42,18 @@ int main(){
 
 
     // json对象, 括号重载, 赋值运算符重载
-    Json obj;
-    obj["bool"] = true;
-    obj["int"] = 555;
-    obj["double"] = "5.20";
-    obj["str"] = "woc";
+    // Json obj;
+    // obj["bool"] = true;
+    // obj["int"] = 555;
+    // obj["double"] = "5.20";
+    // obj["str"] = "woc";
 
-    std::cout << obj.str() << std::endl;
-    std::cout << obj.has("bool") << std::endl;
-    std::cout << obj.has("woc") << std::endl;
+    // std::cout << obj.str() << std::endl;
+    // std::cout << obj.has("bool") << std::endl;
+    // std::cout << obj.has("woc") << std::endl;
 
-    obj.remove("bool");
-    std::cout << obj.str() << std::endl;
+    // obj.remove("bool");
+    // std::cout << obj.str() << std::endl;
     
 
     
@@ -68,6 +71,30 @@ int main(){
     // std::cout << arr1.str() << std::endl;
     
     // 关于内存释放，如果有obj["arr"] = arr; 那么arr的存储会赋给obj，只需要释放obj
+
+
+    // 解析器
+    // const string & str = "[\"a\", 1, 2, 3, true, false, null, 2.4]";
+    // const string & str = "{\"a\": 1, \"b\": null, \"c\": true, \"d\": 2.4, \"e\": \"hello\"}";
+    // Json v;
+    // v.parse(str);
+
+    // std::cout << v.str() << std::endl;
+
+
+    // test文件
+    ifstream fin("./test.json");
+    stringstream ss;
+    ss << fin.rdbuf();
+    const string & str = ss.str();
+
+    Json v;
+    v.parse(str);
+
+    std::cout << v.str() << std::endl;
+
+    string face = v["data"]["face"];
+    int current_min = v["data"]["level_info"]["current_min"];
 
     return 0;
 }

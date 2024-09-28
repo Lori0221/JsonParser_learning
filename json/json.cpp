@@ -1,4 +1,5 @@
 #include "json.h"
+#include "parser.h"
 #include<sstream>
 using namespace std;
 
@@ -165,6 +166,8 @@ bool Json::operator == (const Json &other){
     default:
         break;
     }
+    
+    return false;   // 其他
 }
 
 bool Json::operator != (const Json &other){
@@ -359,4 +362,10 @@ void Json::remove(const string &key){
     if(it == (m_value.m_object)->end()){return;}
     (*(m_value.m_object))[key].clear();
     (m_value.m_object)->erase(key);
+}
+
+void Json::parse(const string &str){
+    Parser p;
+    p.load(str);
+    *this = p.parse();
 }
