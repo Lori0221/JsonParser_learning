@@ -7,6 +7,8 @@ using namespace std;
 #include "json.h"
 using namespace yazi::json;
 
+#include <sys/time.h>
+
 
 int main(){
     // // json 测试
@@ -83,18 +85,46 @@ int main(){
 
 
     // test文件
-    ifstream fin("./test.json");
-    stringstream ss;
-    ss << fin.rdbuf();
-    const string & str = ss.str();
+    // ifstream fin("./test.json");
+    // stringstream ss;
+    // ss << fin.rdbuf();
+    // const string & str = ss.str();
 
-    Json v;
-    v.parse(str);
+    // Json v;
+    // v.parse(str);
 
-    std::cout << v.str() << std::endl;
+    // std::cout << v.str() << std::endl;
 
-    string face = v["data"]["face"];
-    int current_min = v["data"]["level_info"]["current_min"];
+    // string face = v["data"]["face"];
+    // int current_min = v["data"]["level_info"]["current_min"];
+
+
+    try{
+        ifstream fin("./test.json");
+        stringstream ss;
+        ss << fin.rdbuf();
+        const string & data = ss.str();
+
+        struct timeval tv;
+        gettimeofday(&tv, NULL);
+        int start_sec = tv.tv_sec;
+        int start_usec = tv.tv_usec;
+        const int max = 1000000;
+        for (int i = 0; i < max; i++)
+        {
+            Json json;
+            json.parse(data);
+            json.clear();
+        }
+        gettimeofday(&tv, NULL);
+        int end_sec = tv.tv_sec;
+        int end_usec = tv.tv_usec;
+        double time_diff = (end_sec - start_sec) * 1000000 + (end_usec - start_usec);
+        std::cout << time_diff / 1000 / max << "ms" << std::endl;
+    }catch (std::exception & e){
+        std::cout << "catch exception: " << e.what() << std::endl;
+    }
+    return 0;
 
     return 0;
 }
