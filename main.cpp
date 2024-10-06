@@ -99,32 +99,60 @@ int main(){
     // int current_min = v["data"]["level_info"]["current_min"];
 
 
-    try{
-        ifstream fin("./test.json");
-        stringstream ss;
-        ss << fin.rdbuf();
-        const string & data = ss.str();
+    // try{
+    //     ifstream fin("./test.json");
+    //     stringstream ss;
+    //     ss << fin.rdbuf();
+    //     const string & data = ss.str();
 
-        struct timeval tv;
-        gettimeofday(&tv, NULL);
-        int start_sec = tv.tv_sec;
-        int start_usec = tv.tv_usec;
-        const int max = 1000000;
-        for (int i = 0; i < max; i++)
-        {
+    //     struct timeval tv;
+    //     gettimeofday(&tv, NULL);
+    //     int start_sec = tv.tv_sec;
+    //     int start_usec = tv.tv_usec;
+    //     const int max = 1000000;
+    //     for (int i = 0; i < max; i++)
+    //     {
+    //         Json json;
+    //         json.parse(data);
+    //         json.clear();
+    //     }
+    //     gettimeofday(&tv, NULL);
+    //     int end_sec = tv.tv_sec;
+    //     int end_usec = tv.tv_usec;
+    //     double time_diff = (end_sec - start_sec) * 1000000 + (end_usec - start_usec);
+    //     std::cout << time_diff / 1000 / max << "ms" << std::endl;
+    // }catch (std::exception & e){
+    //     std::cout << "catch exception: " << e.what() << std::endl;
+    // }
+    // return 0;
+
+        try{
+            ifstream fin("./test_patch.json");
+            stringstream ss;
+            ss << fin.rdbuf();
+
+            const string & data = ss.str();
+
             Json json;
             json.parse(data);
-            json.clear();
+            // std::cout << json.str() << std::endl;
+            json.patch(R"([
+                { "op": "remove", "path": "/data/face" }
+            ])");
+            std::cout << json.str() << std::endl;
+            
+            // (R"([
+            //     { "op": "replace", "path": "/data/face", "value": "Jane" },
+            //     { "op": "add", "path": "/data/level_info/haha", "value": "11111" },
+            //     { "op": "remove", "path": "/data/face_nft" }
+            // ])");
+
+            
+        }catch (std::exception & e){
+            std::cout << "catch exception: " << e.what() << std::endl;
         }
-        gettimeofday(&tv, NULL);
-        int end_sec = tv.tv_sec;
-        int end_usec = tv.tv_usec;
-        double time_diff = (end_sec - start_sec) * 1000000 + (end_usec - start_usec);
-        std::cout << time_diff / 1000 / max << "ms" << std::endl;
-    }catch (std::exception & e){
-        std::cout << "catch exception: " << e.what() << std::endl;
-    }
-    return 0;
+
+
 
     return 0;
 }

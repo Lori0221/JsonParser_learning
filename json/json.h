@@ -113,6 +113,25 @@ public:
     // 解析
     void parse(const string &str);
 
+    // 修补
+    void patch(const string &str);
+
+    Json getPos(string path);
+
+    template <typename T>
+    void addOperation(string path, T value);
+
+    void removeOperation(string path);
+
+    template <typename T>
+    void replaceOperation(string path, T value);
+
+    void moveOperation(string from, string path);
+
+    void copyOperation(string from, string path);
+
+    template <typename T>
+    void testOperation(string path, T value);
 
 private:
     // 联合体占内存更小一点, double 8byte

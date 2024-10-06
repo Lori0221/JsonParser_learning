@@ -1,6 +1,7 @@
 #include "json.h"
 #include "parser.h"
-#include<sstream>
+#include <sstream>
+#include<iostream>
 using namespace std;
 
 using namespace yazi::json;
@@ -368,4 +369,118 @@ void Json::parse(const string &str){
     Parser p;
     p.load(str);
     *this = p.parse();
+}
+
+void Json::patch(const string &str){
+    // std::cout << this->str() << std::endl;
+    Json other;
+    other.parse(str);
+    if(!other.isArray()){
+        throw std::runtime_error("Please input the patch array in string");
+    }
+    int size = (other.m_value.m_array)->size();
+    for (int i = 0; i < size; i++) {
+        auto operation = other.m_value.m_array->at(i);
+        if(!operation.has("op") || !operation.has("path")){
+            throw logic_error("need key-name \"op\" and \"path\"");
+        }
+        string op = operation["op"];
+        string path = operation["path"];
+    
+        if (op == "add") {
+            try{
+                addOperation(path, operation["value"]);
+            }catch (std::exception & e){
+                throw std::logic_error("add operation error");
+            }
+        } else if (op == "remove") {
+            try{
+                removeOperation(path);
+            }catch (std::exception & e){
+                throw std::logic_error("remove operation error");
+            }
+        } else if (op == "replace") {
+            try{
+                replaceOperation(path, operation["value"]);
+            }catch (std::exception & e){
+                throw std::logic_error("replace operation error");
+            }
+        } else if (op == "move") {
+            try{
+                moveOperation(operation["from"], path);
+            }catch (std::exception & e){
+                throw std::logic_error("move operation error");
+            }
+        } else if (op == "copy") {
+            try{
+                copyOperation(operation["from"], path);
+            }catch (std::exception & e){
+                throw std::logic_error("copy operation error");
+            }
+        } else if (op == "test") {
+            try{
+                testOperation(operation["from"], path);
+            }catch (std::exception & e){
+                throw std::logic_error("test operation error");
+            }
+        }else {
+            throw std::runtime_error("Unknown operation: " + op);
+        }
+    }
+    std::cout << this->str() << std::endl;
+}
+
+Json Json::getPos(string path){
+    stringstream ss(path);
+    vector<string> pa;
+    string token;
+    while(getline(ss, token, '/')){
+        if(token != ""){
+            pa.push_back(token);
+        }
+    }
+    if(pa.size() == 0) {
+        return Json(); // 返回一个空
+    }
+    // 递归下降去找key
+}
+
+template <typename T>
+void Json::addOperation(string path, T value){
+    // Json val = value;
+    
+}
+
+void Json::removeOperation(string path){
+    Json pos = getPos(path);
+    if(pos.isNull()){
+        throw logic_error("path didn't exist");
+    }
+}
+
+
+template <typename T>
+void Json::replaceOperation(string path, T value){
+    removeOperation(path);
+    addOperation(path, value);
+}
+
+void Json::moveOperation(string from, string path){
+    copyOperation(from, path);
+    removeOperation(path);
+}
+
+void Json::copyOperation(string from, string path){
+    Json pos = getPos(path);
+    addOperation(path, pos);
+}
+
+template <typename T>
+void Json::testOperation(string path, T value){
+    Json pos = getPos(path);
+    // 比较
+    Json val = value;
+    if(val != pos){
+        throw logic_error("not equal");
+    }
 }
