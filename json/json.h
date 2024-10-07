@@ -116,7 +116,7 @@ public:
     // 修补
     void patch(const string &str);
 
-    Json getPos(string path);
+    Json* getPos(string path);
 
     template <typename T>
     void addOperation(string path, T value);

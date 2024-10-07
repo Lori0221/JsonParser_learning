@@ -137,15 +137,12 @@ int main(){
             json.parse(data);
             // std::cout << json.str() << std::endl;
             json.patch(R"([
-                { "op": "remove", "path": "/data/face" }
+                { "op": "remove", "path": "/data/face" },
+                { "op": "add", "path": "/data/level_info/haha", "value": 1 },
+                { "op": "replace", "path": "/data/face", "value": "Jane" },
+                { "op": "copy", "path": "/data/answer_status", "from": "/data/email_verified" }
             ])");
             std::cout << json.str() << std::endl;
-            
-            // (R"([
-            //     { "op": "replace", "path": "/data/face", "value": "Jane" },
-            //     { "op": "add", "path": "/data/level_info/haha", "value": "11111" },
-            //     { "op": "remove", "path": "/data/face_nft" }
-            // ])");
 
             
         }catch (std::exception & e){

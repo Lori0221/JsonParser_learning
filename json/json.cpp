@@ -430,7 +430,7 @@ void Json::patch(const string &str){
     std::cout << this->str() << std::endl;
 }
 
-Json Json::getPos(string path){
+Json* Json::getPos(string path){
     stringstream ss(path);
     vector<string> pa;
     string token;
@@ -439,48 +439,54 @@ Json Json::getPos(string path){
             pa.push_back(token);
         }
     }
-    if(pa.size() == 0) {
-        return Json(); // 返回一个空
+    // 下降去找key
+    Json* current = &(*this);
+    for (const auto& p : pa) {
+        current = &(*current)[p];  // 逐级遍历路径
     }
-    // 递归下降去找key
+    return current;
 }
 
 template <typename T>
 void Json::addOperation(string path, T value){
-    // Json val = value;
-    
+    auto pos = getPos(path);
+    Json val = value;
+    *pos = val;
 }
 
 void Json::removeOperation(string path){
-    Json pos = getPos(path);
-    if(pos.isNull()){
+    auto pos = getPos(path);
+    if((*pos).isNull()){
         throw logic_error("path didn't exist");
     }
+    pos->clear();
 }
 
 
 template <typename T>
 void Json::replaceOperation(string path, T value){
-    removeOperation(path);
     addOperation(path, value);
 }
 
 void Json::moveOperation(string from, string path){
-    copyOperation(from, path);
-    removeOperation(path);
+    auto source = getPos(from);
+    auto target = getPos(path);
+    *target = *source;
+    source->clear();
 }
 
 void Json::copyOperation(string from, string path){
-    Json pos = getPos(path);
-    addOperation(path, pos);
+    auto source = getPos(from);
+    auto target = getPos(path);
+    *target = *source;
 }
 
 template <typename T>
 void Json::testOperation(string path, T value){
-    Json pos = getPos(path);
+    auto pos = getPos(path);
     // 比较
     Json val = value;
-    if(val != pos){
+    if(val != *pos){
         throw logic_error("not equal");
     }
 }
